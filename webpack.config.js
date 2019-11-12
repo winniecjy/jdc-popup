@@ -3,7 +3,7 @@ var webpack = require('webpack')
 
 module.exports = {
   // 根据不同的执行环境配置不同的入口
-  entry: NODE_ENV == 'development' ? './src/main.js' : './src/components/Popup/index.js',
+  entry: process.env.NODE_ENV == 'development' ? './src/main.js' : './src/components/Popup/index.js',
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
