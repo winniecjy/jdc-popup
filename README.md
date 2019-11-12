@@ -9,9 +9,9 @@
 
 参数 | 描述 | 可选值 | 默认值    
 -|-|-|-    
-show | 是否显示弹窗 | true/false | false |  
-lockScroll | 禁止背景滚动 | true/false | true |   
-maskColor | 蒙层颜色 | string[background值] | rgba(0,0,0,.3) |  
+show | 是否显示弹窗 | true\|false | false |  
+lockScroll | 禁止背景滚动 | true\|false | true |   
+maskColor | 蒙层颜色 | string | rgba(0,0,0,.3) |  
 tween | 弹窗动画 | fade：淡入淡出<br/>flop：翻牌<br/>scale：缩放<br/>bottom：从下方出现<br/>top：从上方出现<br/>left：从左侧出现<br/>right：从右侧出现 | fade |   
 
 ## 使用示例
