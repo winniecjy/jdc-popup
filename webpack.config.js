@@ -3,14 +3,26 @@ var webpack = require('webpack')
 
 module.exports = {
   // 根据不同的执行环境配置不同的入口
-  entry: process.env.NODE_ENV == 'development' ? './src/main.js' : './src/components/Popup/index.js',
-  output: {
+  entry: process.env.NODE_ENV !== 'production' ? './src/main.js' : './src/components/Popup/index.js',
+  output: process.env.NODE_ENV !== 'production' ? {
+    path: path.resolve(__dirname, './dist'),
+    publicPath: '/dist/',
+    filename: 'build.js'
+  }:{
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
     filename: 'popup.js',
     library: 'Popup', // 指定的就是你使用require时的模块名
     libraryTarget: 'umd', // 指定输出格式
     umdNamedDefine: true // 会对 UMD 的构建过程中的 AMD 模块进行命名。否则就使用匿名的 define
+  },
+  externals: {
+    vue: {
+      root: 'Vue',
+      commonjs: 'vue',
+      commonjs2: 'vue',
+      amd: 'vue'
+    }
   },
   module: {
     rules: [
@@ -100,7 +112,7 @@ if (process.env.NODE_ENV === 'production') {
       }
     }),
     new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
+      sourceMap: false,
       compress: {
         warnings: false
       }

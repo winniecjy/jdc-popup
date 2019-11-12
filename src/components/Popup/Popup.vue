@@ -1,17 +1,36 @@
 <template>
-  <!-- v-show会保留上次滚动状态 -->
-  <transition :name="tween || 'fade'">
-    <div class="popup" v-if="show">
-      <div class="popup__mask" :style="{
-        background: maskColor || 'rgba(0,0,0,.3)'
-      }"></div>
-        <div class="popup__content">
-          <slot>empty</slot>
-        </div>
-    </div>
-  </transition>
+  <div class="popup-container">
+    <!-- v-show会保留上次滚动状态 -->
+    <transition :name="tween || 'fade'">
+      <div class="popup" v-if="show">
+        <div class="popup__mask" :style="{
+          background: maskColor || 'rgba(0,0,0,.3)'
+        }"></div>
+          <div class="popup__content">
+            <slot>empty</slot>
+          </div>
+      </div>
+    </transition>
+  </div>
 </template>
+
+<script>
+import { PopupMixin } from '../../mixins/popup';
+export default {
+  name: 'Popup',
+  mixins: [PopupMixin],
+  props: {
+    maskColor: String,
+    tween: String,
+  },
+}
+</script>
+
+
 <style lang="scss" scoped>
+.popup-container {
+  position: relative;
+}
 .popup {
   position: relative;
 
@@ -32,19 +51,6 @@
   }
 }
 </style>
-
-<script>
-import { PopupMixin } from '../../mixins/popup';
-export default {
-  name: 'Popup',
-  mixins: [PopupMixin],
-  props: {
-    maskColor: String,
-    tween: String,
-  },
-}
-</script>
-
 <style lang="scss">
 .overflow-hidden {
   overflow: hidden;

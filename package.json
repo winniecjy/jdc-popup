@@ -4,14 +4,17 @@
   "version": "1.0.0",
   "author": "caijieying <593775823@qq.com>",
   "license": "MIT",
-  "keywords": ["vue component", "popup"],
+  "keywords": [
+    "vue component",
+    "popup"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/jinglecjy/simple-vue-popup/"
   },
-  "bugs": { 
-    "url" : "https://github.com/jinglecjy/simple-vue-popup/issues",
-    "email" : "593775823@qq.com"
+  "bugs": {
+    "url": "https://github.com/jinglecjy/simple-vue-popup/issues",
+    "email": "593775823@qq.com"
   },
   "private": false,
   "main": "dist/popup.js",
