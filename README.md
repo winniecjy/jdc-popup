@@ -1,10 +1,14 @@
 # simple-vue-popup
 > vue版本：vue2.0   
 
-封装的弹窗组件，实现功能：   
+封装的弹窗组件，目前实现功能：   
 - [x] 解决滑动穿透（背景滚动）问题
 - [x] 新弹窗永远在旧弹窗之上
 - [x] 出现/消失过渡动画
+
+## demo体验地址
+https://jinglecjy.github.io/simple-vue-popup/demo/    
+![demo地址](https://img12.360buyimg.com/imagetools/s200x200_jfs/t1/68885/4/15183/22208/5dcab88aEa322abec/636120af710f2c55.png)
 
 ## 参数说明
 
@@ -35,3 +39,6 @@ tween | 弹窗动画 | fade：淡入淡出<br/>flop：翻牌<br/>scale：缩放<
   - [x] 解决滑动穿透（背景滚动）问题
   - [x] 新弹窗永远在旧弹窗之上
   - [x] 出现/消失过渡动画
+
+
+有任何问题欢迎issue~   
