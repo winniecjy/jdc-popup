@@ -3,6 +3,7 @@ import context from './context';
 
 // 半透明背景层类名
 const MASK_CLASS = 'popup__mask';
+const CONTENT_CONTAINER_CLASS = 'popup__content-container';
 // 需要滚动的元素类名
 const NEED_SCROLL_CLASS = 'container--scrollable';
 export const PopupMixin = {
@@ -24,8 +25,8 @@ export const PopupMixin = {
     if (this.show) {
       this.$nextTick(function() {
         // 设置层级
-        this.$el.style.zIndex = context.zIndex+1;
-        context.zIndex += 1;
+        this.$el.style.zIndex = context.zIndex+2;
+        context.zIndex += 2;
         this.open();
       });
     }
@@ -40,8 +41,8 @@ export const PopupMixin = {
       if (this.show) {
         this.$nextTick(function() {
           // 设置层级
-          this.$el.style.zIndex = context.zIndex+1;
-          context.zIndex += 1;
+          this.$el.style.zIndex = context.zIndex+2;
+          context.zIndex += 2;
           this.open();
         });
       } else {
@@ -54,10 +55,22 @@ export const PopupMixin = {
     open() {
       if (this.opened) return;
       if (this.lockScroll) {
-        // 弹层禁止滚动
+        // 蒙层禁止滚动
         this.maskEle = this._getChildren(this.$el, MASK_CLASS) || [];
         for (let i = 0; i < this.maskEle.length; i++) {
           const el = this.maskEle[i];
+          // 翻牌bug: 蒙层层级需低于内容
+          el.style.zIndex = this.$el.style.zIndex - 1;
+          el.addEventListener('touchmove', this.preventDefault, {
+            passive: false
+          }, false);
+        }
+        // 设置内容层级
+        this.contentEle = this._getChildren(this.$el, CONTENT_CONTAINER_CLASS) || [];
+        for (let i = 0; i < this.contentEle.length; i++) {
+          const el = this.contentEle[i];
+          // 翻牌bug: 蒙层层级需低于内容
+          el.style.zIndex = this.$el.style.zIndex;
           el.addEventListener('touchmove', this.preventDefault, {
             passive: false
           }, false);
@@ -86,6 +99,12 @@ export const PopupMixin = {
       if (this.lockScroll) {
         for(let i=0; i<this.maskEle.length; i++) {
           let el = this.maskEle[i];
+          el.removeEventListener('touchmove', this.preventDefault, {
+            passive: false
+          }, false);
+        }
+        for (let i = 0; i < this.contentEle.length; i++) {
+          const el = this.contentEle[i];
           el.removeEventListener('touchmove', this.preventDefault, {
             passive: false
           }, false);
@@ -141,12 +160,14 @@ export const PopupMixin = {
     _getChildren(parentEl, className) {
       let nodeArr = [];
       [...parentEl.children].forEach((el) => {
-        if (el.className.indexOf(className) !== -1) {
-          nodeArr.push(el);
+        let classes = el.className.split(' ');
+        for (let i=0; i<classes.length; i++) {
+          if (classes[i] === className) {
+            nodeArr.push(el);
+            break;
+          }
         }
-        else {
-          nodeArr = nodeArr.concat(this._getChildren(el, className));
-        }
+        nodeArr = nodeArr.concat(this._getChildren(el, className));
       });
       return nodeArr;
     },
