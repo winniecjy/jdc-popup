@@ -1,9 +1,12 @@
 import { TouchMixin } from '../touch';
 import context from './context';
 
-// 半透明背景层类名
-const MASK_CLASS = 'popup__mask';
-const CONTENT_CONTAINER_CLASS = 'popup__content-container';
+// 蒙层类名
+const MASK_CLASS = ['jdc-popup__mask'];
+// 内容层级
+const CONTENT_CONTAINER_CLASS = ['jdc-popup__content-container'];
+// 需要禁止滚动的层
+const NEED_PREVENT_TOUCH = ['jdc-popup', 'jdc-popup__mask', 'jdc-popup__content-container', 'jdc-popup__content'];
 // 需要滚动的元素类名
 const NEED_SCROLL_CLASS = 'container--scrollable';
 export const PopupMixin = {
@@ -56,25 +59,32 @@ export const PopupMixin = {
       if (this.opened) return;
       if (this.lockScroll) {
         // 蒙层禁止滚动
-        this.maskEle = this._getChildren(this.$el, MASK_CLASS) || [];
-        for (let i = 0; i < this.maskEle.length; i++) {
-          const el = this.maskEle[i];
-          // 翻牌bug: 蒙层层级需低于内容
-          el.style.zIndex = this.$el.style.zIndex - 1;
-          el.addEventListener('touchmove', this.preventDefault, {
-            passive: false
-          }, false);
+        for(let arrIndex=0; arrIndex<MASK_CLASS.length; arrIndex++) {
+          this.maskEle = this._getChildren(this.$el, MASK_CLASS[arrIndex]) || [];
+          for (let i = 0; i < this.maskEle.length; i++) {
+            const el = this.maskEle[i];
+            el.style.zIndex = this.$el.style.zIndex - 1;
+          }
         }
         // 设置内容层级
-        this.contentEle = this._getChildren(this.$el, CONTENT_CONTAINER_CLASS) || [];
-        for (let i = 0; i < this.contentEle.length; i++) {
-          const el = this.contentEle[i];
-          // 翻牌bug: 蒙层层级需低于内容
-          el.style.zIndex = this.$el.style.zIndex;
-          el.addEventListener('touchmove', this.preventDefault, {
-            passive: false
-          }, false);
+        for (let arrIndex=0; arrIndex<CONTENT_CONTAINER_CLASS.length; arrIndex++) {
+          this.contentEle = this._getChildren(this.$el, CONTENT_CONTAINER_CLASS[arrIndex]) || [];
+          for (let i = 0; i < this.contentEle.length; i++) {
+            const el = this.contentEle[i];
+            el.style.zIndex = this.$el.style.zIndex;
+          }
+        }      
+        // 不可滚动元素处理
+        for (let arrIndex=0; arrIndex<NEED_PREVENT_TOUCH.length; arrIndex++) {
+          this.preventEle = this._getChildren(this.$el, NEED_PREVENT_TOUCH[arrIndex]) || [];
+          for (let i = 0; i < this.preventEle.length; i++) {
+            const el = this.preventEle[i];
+            el.addEventListener('touchmove', this.preventDefault, {
+              passive: false
+            }, false);
+          }
         }
+
         // 可滚动元素滚动处理
         this.scrollEle = this._getChildren(this.$el, NEED_SCROLL_CLASS) || [];
         for (let i = 0; i < this.scrollEle.length; i++) {
@@ -97,17 +107,15 @@ export const PopupMixin = {
       if (!this.opened) return;
       this.opened = false;
       if (this.lockScroll) {
-        for(let i=0; i<this.maskEle.length; i++) {
-          let el = this.maskEle[i];
-          el.removeEventListener('touchmove', this.preventDefault, {
-            passive: false
-          }, false);
-        }
-        for (let i = 0; i < this.contentEle.length; i++) {
-          const el = this.contentEle[i];
-          el.removeEventListener('touchmove', this.preventDefault, {
-            passive: false
-          }, false);
+        // 不可滚动元素处理
+        for (let arrIndex=0; arrIndex<NEED_PREVENT_TOUCH.length; arrIndex++) {
+          this.preventEle = this._getChildren(this.$el, NEED_PREVENT_TOUCH[arrIndex]) || [];
+          for (let i = 0; i < this.preventEle.length; i++) {
+            const el = this.preventEle[i];
+            el.removeEventListener('touchmove', this.preventDefault, {
+              passive: false
+            }, false);
+          }
         }
         for(let i=0; i<this.scrollEle.length; i++) {
           let el = this.scrollEle[i];

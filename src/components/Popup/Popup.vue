@@ -1,13 +1,13 @@
 <template>
-  <div class="popup-container">
+  <div class="jdc-popup-container">
     <!-- v-show会保留上次滚动状态 -->
-    <transition :name="tween || 'fade'" appear>
-      <div class="popup" v-if="show">
-        <div class="popup__mask" :style="{
+    <transition :name="tween || ''" :duration="500">
+      <div class="jdc-popup" v-show="show">
+        <div class="jdc-popup__mask" :style="{
           background: maskColor || 'rgba(0,0,0,.3)'
         }"></div>
-        <div class="popup__content-container">
-          <div class="popup__content">
+        <div class="jdc-popup__content-container">
+          <div class="jdc-popup__content" @animationstart>
             <slot>empty</slot>
           </div>
         </div>
@@ -25,17 +25,27 @@ export default {
     maskColor: String,
     tween: String,
   },
+  mounted() {
+    // fixed：animation过渡初始出现穿透现象
+    // if (tween === 'flop' || tween === 'bounce') {
+
+    // }
+  },
 }
 </script>
 
 
 <style lang="scss" scoped>
-.popup-container {
+.jdc-popup-container {
   position: relative;
 }
-.popup {
+.jdc-popup {
   overflow: hidden;
-  transition: all .5s ease;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 
   &__mask {
     width: 100%;
@@ -43,7 +53,6 @@ export default {
     position: fixed;
     left: 0;
     top: 0;
-    transition: all .5s ease;
   }
   &__content {
     &-container {
@@ -63,91 +72,97 @@ export default {
     left: 50%;
     top: 50%;
     transform: translate3d(-50%, -50%, 0);
-    transition: all .5s ease;
-  }
-}
-.popup-container .popup {
-  $tweenMap: (
-    fade: true,
-    flop: true,
-    bottom: true,
-    top: true,
-    left: true,
-    right: true,
-    scale: true,
-  );
-  @each $key, $value in $tweenMap {
-    .#{$key}-enter-active, .#{$key}-leave-active {
-      transition: all .5s ease;
-    }
-  }
-  $opacityMap: (
-    fade: true,
-    bottom: true,
-    top: true,
-    left: true,
-    right: true,
-  );
-  @each $key, $value in $opacityMap {
-    .#{$key}-enter, .#{$key}-leave-to {
-      opacity: 0;
-    }
-  }
-  .flop-enter-active .popup__content {
-    animation: flop .5s ease;
-    animation-iteration-count: 1;
-  }
-  .flop-leave-active .popup__content {
-    animation: flop .5s ease reverse;
-    animation-iteration-count: 1;
-  }
-  @keyframes flop {
-    0% {
-      transform: translate3d(-50%, -50%, 0) rotateY(-90deg);
-    }
-    100% {
-      transform: translate3d(-50%, -50%, 0) rotateY(0deg);
-    }
-  }
-  .bottom-enter .popup__content, .bottom-leave-to .popup__content {
-    top: 100%;
-    transform: translate(-50%, -100%);
-  }
-  .top-enter .popup__content, .top-leave-to .popup__content {
-    top: 0;
-    transform: translate(-50%, 0);
-  }
-  .left-enter .popup__content, .left-leave-to .popup__content {
-    left: 0%;
-    transform: translate(0%, -50%);
-  }
-  .right-enter .popup__content, .right-leave-to .popup__content {
-    left: 100%;
-    transform: translate(-100%, -50%);
-  }
-  .scale-enter-active .popup__content {
-    animation: scaleAnim .5s ease;
-    animation-iteration-count: 1;
-  }
-  .scale-leave-active .popup__content {
-    animation: scaleAnim .5s ease reverse;
-    animation-iteration-count: 1;
-  }
-  @keyframes scaleAnim {
-    0% {
-      transform: translate(-50%, -50%) scale(0);
-    }
-    50% {
-      transform: translate(-50%, -50%) scale(1.5);
-    }
-    100% {
-      transform: translate(-50%, -50%) scale(1);
-    }
   }
 }
 </style>
 <style lang="scss">
 .overflow-hidden {
   overflow: hidden;
+}
+$tweenMap: (
+  fade: true,
+  flop: true,
+  bottom: true,
+  top: true,
+  left: true,
+  right: true,
+  bounce: true,
+);
+@each $key, $value in $tweenMap {
+  .#{$key}-enter-active .jdc-popup__content, .#{$key}-leave-active .jdc-popup__content {
+    transition: all .5s ease;
+  }
+}
+$fatherTransMap: (
+  fade: true,
+  flop: true,
+  bottom: true,
+  top: true,
+  left: true,
+  right: true,
+  bounce: true,
+);
+@each $key, $value in $tweenMap {
+  .#{$key}-enter-active .jdc-popup__content, .#{$key}-leave-active .jdc-popup__content {
+    transition: all .5s ease;
+  }
+  .#{$key}-enter-active, .#{$key}-leave-active {
+    transition: all .5s ease;
+  }
+  .#{$key}-enter, .#{$key}-leave-to {
+    opacity: 0;
+  }
+}
+
+.bottom-enter .jdc-popup__content, .bottom-leave-to .jdc-popup__content {
+  top: 100%;
+  transform: translate(-50%, -100%);
+}
+.top-enter .jdc-popup__content, .top-leave-to .jdc-popup__content {
+  top: 0;
+  transform: translate(-50%, 0);
+}
+.left-enter .jdc-popup__content, .left-leave-to .jdc-popup__content {
+  left: 0%;
+  transform: translate(0%, -50%);
+}
+.right-enter .jdc-popup__content, .right-leave-to .jdc-popup__content {
+  left: 100%;
+  transform: translate(-100%, -50%);
+}
+.bounce-enter-active .jdc-popup__content {
+  animation: bounceAnim .5s ease;
+  animation-iteration-count: 1;
+}
+.bounce-leave-active .jdc-popup__content {
+  animation: bounceAnim .5s ease reverse;
+  animation-iteration-count: 1;
+}
+@keyframes bounceAnim {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.flop-enter-active .jdc-popup__content {
+  animation: flop .5s ease;
+  animation-iteration-count: 1;
+}
+.flop-leave-active .jdc-popup__content {
+  animation: flop .5s ease reverse;
+  animation-iteration-count: 1;
+}
+@keyframes flop {
+  0% {
+    transform: translate3d(-50%, -50%, 0) rotateY(-90deg);
+  }
+  100% {
+    transform: translate3d(-50%, -50%, 0) rotateY(0deg);
+  }
 }
 </style>
