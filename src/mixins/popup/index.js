@@ -6,7 +6,7 @@ const MASK_CLASS = ['jdc-popup__mask'];
 // 内容层级
 const CONTENT_CONTAINER_CLASS = ['jdc-popup__content-container'];
 // 需要禁止滚动的层
-const NEED_PREVENT_TOUCH = ['jdc-popup', 'jdc-popup__mask', 'jdc-popup__content-container', 'jdc-popup__content'];
+const NEED_PREVENT_TOUCH = ['jdc-popup', 'jdc-popup-container', 'jdc-popup__mask', 'jdc-popup__content-container', 'jdc-popup__content'];
 // 需要滚动的元素类名
 const NEED_SCROLL_CLASS = 'container--scrollable';
 export const PopupMixin = {
@@ -89,6 +89,7 @@ export const PopupMixin = {
         this.scrollEle = this._getChildren(this.$el, NEED_SCROLL_CLASS) || [];
         for (let i = 0; i < this.scrollEle.length; i++) {
           const el = this.scrollEle[i];
+          el.style.overscrollBehavior = 'contain';
           el.addEventListener('touchstart', this.touchStart, {
             passive: false
           }, false);
@@ -132,7 +133,6 @@ export const PopupMixin = {
       }
     },
     onTouchMove(event, el) {
-      console.log(el, event)
       this.touchMove(event);
       if (event.targetTouches.length !== 1) return;
       
@@ -148,7 +148,7 @@ export const PopupMixin = {
           clientHeight
         } = targetElement
         // 向上滚动时 且 已经到达顶部
-        const isOnTop = this.deltaY > 0 && scrollTop === 0
+        const isOnTop = this.deltaY > 0 && scrollTop <= 0
 
         // 当向下滚动 且 已经到达底部
         const isOnBottom = this.deltaY < 0 && scrollTop + clientHeight + 1 >= scrollHeight

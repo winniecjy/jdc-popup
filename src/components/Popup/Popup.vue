@@ -7,7 +7,7 @@
           background: maskColor || 'rgba(0,0,0,.3)'
         }"></div>
         <div class="jdc-popup__content-container">
-          <div class="jdc-popup__content" @animationstart>
+          <div class="jdc-popup__content" ref="popupContent">
             <slot>empty</slot>
           </div>
         </div>
@@ -24,12 +24,6 @@ export default {
   props: {
     maskColor: String,
     tween: String,
-  },
-  mounted() {
-    // fixed：animation过渡初始出现穿透现象
-    // if (tween === 'flop' || tween === 'bounce') {
-
-    // }
   },
 }
 </script>
@@ -71,7 +65,7 @@ export default {
     position: absolute;
     left: 50%;
     top: 50%;
-    transform: translate3d(-50%, -50%, 0);
+    transform: translate(-50%, -50%) scale(1) rotateY(0deg);
   }
 }
 </style>
@@ -109,60 +103,31 @@ $fatherTransMap: (
   .#{$key}-enter-active, .#{$key}-leave-active {
     transition: all .5s ease;
   }
-  .#{$key}-enter, .#{$key}-leave-to {
+  .#{$key}-enter, .#{$key}-leave-to, .#{$key}-leave-active {
     opacity: 0;
   }
 }
 
-.bottom-enter .jdc-popup__content, .bottom-leave-to .jdc-popup__content {
+.bottom-enter .jdc-popup__content, .bottom-leave-to .jdc-popup__content, .bottom-leave-active .jdc-popup__content {
   top: 100%;
   transform: translate(-50%, -100%);
 }
-.top-enter .jdc-popup__content, .top-leave-to .jdc-popup__content {
+.top-enter .jdc-popup__content, .top-leave-to .jdc-popup__content, .top-leave-active .jdc-popup__content {
   top: 0;
   transform: translate(-50%, 0);
 }
-.left-enter .jdc-popup__content, .left-leave-to .jdc-popup__content {
+.left-enter .jdc-popup__content, .left-leave-to .jdc-popup__content, .left-leave-active .jdc-popup__content {
   left: 0%;
   transform: translate(0%, -50%);
 }
-.right-enter .jdc-popup__content, .right-leave-to .jdc-popup__content {
+.right-enter .jdc-popup__content, .right-leave-to .jdc-popup__content, .right-leave-active .jdc-popup__content {
   left: 100%;
   transform: translate(-100%, -50%);
 }
-.bounce-enter-active .jdc-popup__content {
-  animation: bounceAnim .5s ease;
-  animation-iteration-count: 1;
+.bounce-enter .jdc-popup__content, .bounce-leave-to .jdc-popup__content, .bounce-leave-active .jdc-popup__content {
+  transform: translate(-50%, -50%) scale(1.5) rotateY(0deg);
 }
-.bounce-leave-active .jdc-popup__content {
-  animation: bounceAnim .5s ease reverse;
-  animation-iteration-count: 1;
-}
-@keyframes bounceAnim {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.5);
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-.flop-enter-active .jdc-popup__content {
-  animation: flop .5s ease;
-  animation-iteration-count: 1;
-}
-.flop-leave-active .jdc-popup__content {
-  animation: flop .5s ease reverse;
-  animation-iteration-count: 1;
-}
-@keyframes flop {
-  0% {
-    transform: translate3d(-50%, -50%, 0) rotateY(-90deg);
-  }
-  100% {
-    transform: translate3d(-50%, -50%, 0) rotateY(0deg);
-  }
+.flop-enter .jdc-popup__content, .flop-leave-to .jdc-popup__content, .flop-leave-active .jdc-popup__content {
+  transform: translate(-50%, -50%) scale(1) rotateY(-90deg);
 }
 </style>
