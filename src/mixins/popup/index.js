@@ -6,9 +6,7 @@ import context from './context';
 const MASK_CLASS = ['jdc-popup__mask'];
 // 内容层级
 const CONTENT_CONTAINER_CLASS = ['jdc-popup__content-container'];
-// 需要禁止滚动的层
-const NEED_PREVENT_TOUCH = ['jdc-popup-container', 'jdc-popup', 'jdc-popup__mask', 'jdc-popup__content-container', 'jdc-popup__content'];
-// 需要滚动的元素类名
+// // 需要滚动的元素类名
 const NEED_SCROLL_CLASS = 'container--scrollable';
 export const PopupMixin = {
   mixins: [TouchMixin],
@@ -57,9 +55,10 @@ export const PopupMixin = {
 
   methods: {
     open() {
+      console.log('opening')
       if (this.opened) return;
       if (this.lockScroll) {
-        // 蒙层禁止滚动
+        // 蒙层层级
         for(let arrIndex=0; arrIndex<MASK_CLASS.length; arrIndex++) {
           this.maskEle = this._getChildren(this.$el, MASK_CLASS[arrIndex]) || [];
           for (let i = 0; i < this.maskEle.length; i++) {
@@ -67,7 +66,7 @@ export const PopupMixin = {
             el.style.zIndex = this.$el.style.zIndex - 1;
           }
         }
-        // 设置内容层级
+        // 内容层级
         for (let arrIndex=0; arrIndex<CONTENT_CONTAINER_CLASS.length; arrIndex++) {
           this.contentEle = this._getChildren(this.$el, CONTENT_CONTAINER_CLASS[arrIndex]) || [];
           for (let i = 0; i < this.contentEle.length; i++) {
@@ -76,21 +75,27 @@ export const PopupMixin = {
           }
         }      
         // 不可滚动元素处理
-        for (let arrIndex=0; arrIndex<NEED_PREVENT_TOUCH.length; arrIndex++) {
-          this.preventEle = this._getChildren(this.$el, NEED_PREVENT_TOUCH[arrIndex]) || [];
-          for (let i = 0; i < this.preventEle.length; i++) {
-            const el = this.preventEle[i];
-            el.addEventListener('touchmove', this.prevent, passiveSupported ? {
-              passive: false,
-              capture: false
-            } : false);
-          }
-        }
+        document.addEventListener('touchmove', this.prevent, passiveSupported ? {
+          passive: false,
+          capture: false
+        } : false);
+        this.preventAll(this.$el);
+        // for (let arrIndex=0; arrIndex<NEED_PREVENT_TOUCH.length; arrIndex++) {
+        //   this.preventEle = this._getChildren(this.$el, NEED_PREVENT_TOUCH[arrIndex]) || [];
+        //   for (let i = 0; i < this.preventEle.length; i++) {
+        //     const el = this.preventEle[i];
+        //     el.addEventListener('touchmove', this.prevent, passiveSupported ? {
+        //       passive: false,
+        //       capture: false
+        //     } : false);
+        //   }
+        // }
 
         // 可滚动元素滚动处理
-        this.scrollEle = this._getChildren(this.$el, NEED_SCROLL_CLASS) || [];
+        this.scrollEle = this._getChildren(this.$el, NEED_SCROLL_CLASS) || [document.querySelector('.jdc-popup__content')];
         for (let i = 0; i < this.scrollEle.length; i++) {
           const el = this.scrollEle[i];
+          console.log('scroll ele', el)
           el.style.overscrollBehavior = 'contain';
           el.addEventListener('touchstart', this.touchStart, passiveSupported ? {
             passive: false,
@@ -112,15 +117,19 @@ export const PopupMixin = {
       this.opened = false;
       if (this.lockScroll) {
         // 不可滚动元素处理
-        for (let arrIndex=0; arrIndex<NEED_PREVENT_TOUCH.length; arrIndex++) {
-          this.preventEle = this._getChildren(this.$el, NEED_PREVENT_TOUCH[arrIndex]) || [];
-          for (let i = 0; i < this.preventEle.length; i++) {
-            const el = this.preventEle[i];
-            el.removeEventListener('touchmove', this.prevent, passiveSupported ? {
-              capture: false
-            } : false);
-          }
-        }
+        document.removeEventListener('touchmove', this.prevent, passiveSupported ? {
+          capture: false
+        } : false);
+        this.removePreventAll(this.$el);
+        // for (let arrIndex=0; arrIndex<NEED_PREVENT_TOUCH.length; arrIndex++) {
+        //   this.preventEle = this._getChildren(this.$el, NEED_PREVENT_TOUCH[arrIndex]) || [];
+        //   for (let i = 0; i < this.preventEle.length; i++) {
+        //     const el = this.preventEle[i];
+        //     el.removeEventListener('touchmove', this.prevent, passiveSupported ? {
+        //       capture: false
+        //     } : false);
+        //   }
+        // }
         for(let i=0; i<this.scrollEle.length; i++) {
           let el = this.scrollEle[i];
           el.removeEventListener('touchstart', this.touchStart, passiveSupported ? {
@@ -158,15 +167,50 @@ export const PopupMixin = {
         const isOnBottom = this.deltaY < 0 && scrollTop + clientHeight + 1 >= scrollHeight;
 
         if (isOnTop || isOnBottom) {
-          event.preventDefault();
+          event.cancelable && event.preventDefault();
         }
       }
 
       return true;
     },
+    preventAll(parentEl) {
+      let nodeArr = [];
+      [...parentEl.children].forEach((el) => {
+        let needPrevent = false;
+        let classes = el.className.split(' ');
+        for (let i=0; i<classes.length; i++) {
+          if (classes[i] === NEED_SCROLL_CLASS) needPrevent = true;
+        }
+        if (!needPrevent) {
+          el.addEventListener('touchmove', this.prevent, passiveSupported ? {
+            passive: false,
+            capture: false
+          } : false);
+          nodeArr = nodeArr.concat(this.preventAll(el));
+        }
+      })
+      return nodeArr;
+    },
+    removePreventAll(parentEl) {
+      let nodeArr = [];
+      [...parentEl.children].forEach((el) => {
+        let needPrevent = false;
+        let classes = el.className.split(' ');
+        for (let i=0; i<classes.length; i++) {
+          if (classes[i] === NEED_SCROLL_CLASS) needPrevent = true;
+        }
+        if (!needPrevent) {
+          el.removeEventListener('touchmove', this.prevent, passiveSupported ? {
+            capture: false
+          } : false);
+          nodeArr = nodeArr.concat(this.preventAll(el));
+        }
+      })
+      return nodeArr;
+    },
     prevent(event) {
       event.stopPropagation();
-      event.preventDefault();
+      event.cancelable && event.preventDefault();
     },
     _getChildren(parentEl, className) {
       let nodeArr = [];
