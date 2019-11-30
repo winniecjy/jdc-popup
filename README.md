@@ -19,9 +19,9 @@ npm install simple-vue-popup -S
 import Popup from 'simple-vue-popup'
 
 
-<!-- 对于内部需要滚动的元素，需要添加类名container--scrollable -->
+<!-- 对于内部需要滚动的元素，需要添加类名jdc-popup-scroll -->
 <Popup :show="showPopup" tween="bottom">
-  <div class="popup container--scrollable">
+  <div class="popup jdc-popup-scroll">
     <p v-for="index of 100">弹窗内容{{index}}</p>
   </div>
 </Popup>
@@ -51,7 +51,7 @@ tween | 弹窗过渡动画 | fade：淡入淡出<br/>flop：翻牌<br/>scale：�
 
 ## FIXING ... 
 - [x] ANDROID下边界滚动？
-- [ ] 多弹层是只有顶部的元素是可滚动的，避免穿透到下层
+- [x] 多弹层是只有顶部的元素是可滚动的，避免穿透到下层
 - [ ] ios8下弹层无法滚动
 
 
