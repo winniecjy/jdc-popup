@@ -1,4 +1,4 @@
-# simple-vue-popup
+# jdc-popup
 > vue版本：vue2.1.8+   
 
 封装的弹窗组件，目前实现功能：   
@@ -7,16 +7,16 @@
 - [x] 出现/消失过渡动画
 
 ## demo体验地址
-https://jinglecjy.github.io/simple-vue-popup/demo/    
+https://jinglecjy.github.io/jdc-popup/demo/    
 ![demo地址](https://img12.360buyimg.com/imagetools/s200x200_jfs/t1/68885/4/15183/22208/5dcab88aEa322abec/636120af710f2c55.png)
 
 ## 安装
 ```javascript
-npm install simple-vue-popup -S
+npm install jdc-popup -S
 ```
 ## 快速使用
 ```html
-import Popup from 'simple-vue-popup'
+import Popup from 'jdc-popup'
 
 
 <!-- 对于内部需要滚动的元素，需要添加类名jdc-popup-scroll -->

@@ -1,5 +1,5 @@
 {
-  "name": "simple-vue-popup",
+  "name": "jdc-popup",
   "description": "a simple vue popup component",
   "version": "1.0.0",
   "author": "caijieying <593775823@qq.com>",
@@ -10,10 +10,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jinglecjy/simple-vue-popup/"
+    "url": "https://github.com/jinglecjy/jdc-popup/"
   },
   "bugs": {
-    "url": "https://github.com/jinglecjy/simple-vue-popup/issues",
+    "url": "https://github.com/jinglecjy/jdc-popup/issues",
     "email": "593775823@qq.com"
   },
   "private": false,
