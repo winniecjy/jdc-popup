@@ -1,10 +1,10 @@
 <template>
   <div class="jdc-popup-container">
     <!-- v-show会保留上次滚动状态 -->
-    <transition :name="tween || ''" :duration="500">
+    <transition :name="tween" :duration="500">
       <div class="jdc-popup" v-show="show">
         <div class="jdc-popup__mask" :style="{
-          background: maskColor || 'rgba(0,0,0,.3)'
+          background: maskColor
         }"></div>
         <div class="jdc-popup__content-container">
           <div class="jdc-popup__content" ref="popupContent">
@@ -22,8 +22,14 @@ export default {
   name: 'Popup',
   mixins: [PopupMixin],
   props: {
-    maskColor: String,
-    tween: String,
+    maskColor: {
+      type: String,
+      default: 'rgba(0,0,0,.3)',
+    },
+    tween: {
+      type: String,
+      default: '',
+    },
   },
 }
 </script>
