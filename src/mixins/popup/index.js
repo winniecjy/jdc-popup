@@ -93,7 +93,6 @@ export const PopupMixin = {
           // pc处理
           document.body.classList.add('overflow-hidden');
           // android处理
-          console.log(detectOS(), detectOS().android)
           if(detectOS().android) {
             this._androidUnlock = this.setOverflowHiddenMobile()
           }
