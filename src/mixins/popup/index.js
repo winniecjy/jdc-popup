@@ -1,5 +1,6 @@
 import { TouchMixin } from '../touch';
 import { passiveSupported } from '../event';
+import { detectOS } from '../env';
 import context from './context';
 
 // 蒙层类名
@@ -74,27 +75,29 @@ export const PopupMixin = {
           }
         }      
         // 不可滚动元素处理
-        document.addEventListener('touchmove', this.prevent, passiveSupported ? {
-          passive: false,
-          capture: false
-        } : false);
         this.preventAll(this.$el);
 
         // 可滚动元素滚动处理
-        this.scrollEle = this._getChildren(this.$el, NEED_SCROLL_CLASS) || [document.querySelector('.jdc-popup__content')];
+        this.scrollEle = this._getChildren(this.$el, NEED_SCROLL_CLASS) || [];
         for (let i = 0; i < this.scrollEle.length; i++) {
           const el = this.scrollEle[i];
           el.style.overscrollBehavior = 'contain';
           el.addEventListener('touchstart', this.touchStart, passiveSupported ? {
             passive: false,
             capture: false
-          } : false);
+          } : true);
           this._removeListener.push(this._addListener(el, 'touchmove', this.onTouchMove, el));
         }
 
-        // pc处理
-        document.body.classList.add('overflow-hidden');
-
+        if (context.lockCount<=0) {
+          // pc处理
+          document.body.classList.add('overflow-hidden');
+          // android处理
+          console.log(detectOS(), detectOS().android)
+          if(detectOS().android) {
+            this._androidUnlock = this.setOverflowHiddenMobile()
+          }
+        }
         this.opened = true;
 
         context.lockCount++;
@@ -105,21 +108,24 @@ export const PopupMixin = {
       this.opened = false;
       if (this.lockScroll) {
         // 不可滚动元素处理
-        document.removeEventListener('touchmove', this.prevent, passiveSupported ? {
-          capture: false
-        } : false);
         this.removePreventAll(this.$el);
+        // 可滚动元素处理
         for(let i=0; i<this.scrollEle.length; i++) {
           let el = this.scrollEle[i];
+          el.style.overscrollBehavior = 'auto';
           el.removeEventListener('touchstart', this.touchStart, passiveSupported ? {
             capture: false
-          } : false);
+          } : true);
           this._removeListener[i]();
         }
         this._removeListener = [];
         context.lockCount--;
         if (context.lockCount<=0) {
           document.body.classList.remove('overflow-hidden');
+          // android处理
+          if(detectOS().android && this._androidUnlock) {
+            this._androidUnlock()
+          }
         }
       }
     },
@@ -187,9 +193,37 @@ export const PopupMixin = {
       })
       return nodeArr;
     },
+    setOverflowHiddenMobile() {
+      const $html = document.documentElement
+      const $body = document.body
+      const scrollTop = $html.scrollTop || $body.scrollTop
+      const htmlStyle = { ...$html.style }
+      const bodyStyle = { ...$body.style }
+  
+      $html.style.height = '100%'
+      $html.style.overflow = 'hidden'
+  
+      $body.style.top = `-${scrollTop}px`
+      $body.style.width = '100%'
+      $body.style.height = 'auto'
+      $body.style.position = 'fixed'
+      $body.style.overflow = 'hidden'
+  
+      return () => {
+          $html.style.height = htmlStyle.height || ''
+          $html.style.overflow = htmlStyle.overflow || ''
+  
+          ;['top', 'width', 'height', 'overflow', 'position'].forEach((x) => {
+              $body.style[x] = bodyStyle[x] || ''
+          })
+  
+          window.scrollTo(0, scrollTop)
+      }
+    },
     prevent(event) {
       event.stopPropagation();
       event.cancelable && event.preventDefault();
+      return false;
     },
     _getChildren(parentEl, className) {
       let nodeArr = [];
