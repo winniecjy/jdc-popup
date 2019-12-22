@@ -1,7 +1,7 @@
 {
   "name": "jdc-popup",
   "description": "a simple vue popup component",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "caijieying <593775823@qq.com>",
   "license": "MIT",
   "keywords": [
