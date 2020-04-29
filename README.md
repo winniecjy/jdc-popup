@@ -56,8 +56,10 @@ import Popup from 'jdc-popup'
 
 ## FIXING ...
 
-- [x] ANDROID 下边界滚动？
+## FIXING ...
+
+- [x] ANDROID 下边界滚动
 - [x] 多弹层是只有顶部的元素是可滚动的，避免穿透到下层
-- [ ] ios8 下弹层无法滚动
+- [x] ios8 下弹层无法滚动
 
 有任何问题欢迎 issue~
